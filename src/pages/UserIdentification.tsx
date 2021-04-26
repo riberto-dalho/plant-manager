@@ -1,28 +1,63 @@
-import React from 'react';
-import { SafeAreaView, Text, TextInput, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, SafeAreaView, Text, TextInput, Platform, StyleSheet, View } from 'react-native';
+import { Button } from '../components/Button';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
 export function UserIdentification() {
+
+    const [isFocused, setIsFocused] = useState(false);
+    const [isFilled, setIsFilled] = useState(false);
+    const [name, setName] = useState<string>();
+
+    function handleInputBlur() {
+        setIsFocused(false);
+        setIsFilled(!!name);
+    }
+
+    function handleInputFocus() {
+        setIsFocused(true);
+    }
+
+    function handleInputChange(value: string) {
+        setIsFilled(!!value);
+        setName(value);
+    }
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <View style={styles.form}>
-                    <Text style={styles.emoticon}>
-                        😄
-                    </Text>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 
-                    <Text style={styles.title}>
-                        Como podemos {'\n'}
-                        chamar você?
-                    </Text>
+                <View style={styles.content}>
+                    <View style={styles.form}>
+                        <View style={styles.header}>
+                            <Text style={styles.emoticon}>
+                                {isFilled ? '😄' : '🤔'}
+                            </Text>
 
-                    <TextInput style={styles.input}
-                    />
+                            <Text style={styles.title}>
+                                Como podemos {'\n'} chamar você?
+                            </Text>
+                        </View>
+
+                        <TextInput
+                            style={[
+                                styles.input,
+                                (isFilled || isFocused) && { borderColor: colors.green }
+                            ]}
+                            placeholder='Digite o nome'
+                            onBlur={handleInputBlur}
+                            onFocus={handleInputFocus}
+                            onChangeText={handleInputChange}
+                        />
+
+                        <View style={styles.footer}>
+                            <Button />
+                        </View>
+                    </View>
                 </View>
-            </View>
-
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
@@ -47,6 +82,9 @@ const styles = StyleSheet.create({
     emoticon: {
         fontSize: 54
     },
+    header: {
+        alignItems: 'center'
+    },
     input: {
         borderBottomWidth: 1,
         borderColor: colors.gray,
@@ -64,5 +102,10 @@ const styles = StyleSheet.create({
         fontFamily: fonts.heading,
         lineHeight: 32,
         marginTop: 20
+    },
+    footer: {
+        marginTop: 40,
+        width: '100%',
+        paddingHorizontal: 20
     }
 });
